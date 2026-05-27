@@ -97,7 +97,7 @@ def _buildbuddy_toolchain_impl(rctx):
     if not rctx.os.name.lower().startswith("windows"):
         rctx.symlink("/usr/bin/ar", "bin/ar")
         rctx.symlink("/usr/bin/ld", "bin/ld")
-        rctx.symlink("/usr/bin/ld.gold", "bin/ld.gold")
+        rctx.symlink("/usr/bin/ld.lld", "bin/ld.lld")
 
     # Repository implementation functions can be restarted, keep expensive ops at the end.
     if rctx.attr.llvm:
