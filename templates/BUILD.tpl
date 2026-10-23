@@ -249,7 +249,7 @@ cc_toolchain_config(
     dbg_compile_flags = ["-g"],
     cxx_flags = ["-std=c++17"],
     link_flags = [
-        "-fuse-ld=gold",
+        "-fuse-ld=%{linker}",
         "-Wl,-no-as-needed",
         "-Wl,-z,relro,-z,now",
         "-B/usr/bin",

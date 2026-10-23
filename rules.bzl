@@ -1,3 +1,6 @@
+# Linkers accepted by -fuse-ld. Each needs /usr/bin/ld.<linker> in the container image.
+LINKERS = ["gold", "lld"]
+
 def _buildbuddy_toolchain_impl(rctx):
     relative_path_prefix = "external/%s/" % rctx.name
     toolchain_path_prefix = relative_path_prefix
@@ -46,6 +49,7 @@ def _buildbuddy_toolchain_impl(rctx):
         "%{default_cc_toolchain_suite}": "@local_config_cc//:toolchain" if rctx.os.name == "mac os x" else ":ubuntu_cc_toolchain_suite",
         "%{default_cc_toolchain}": ":ubuntu_cc_toolchain",
         "%{gcc_version}": rctx.attr.gcc_version or default_tool_versions["gcc"],
+        "%{linker}": rctx.attr.linker,
         "%{default_container_image}": default_container_image,
         "%{default_x86_64_container_image}": default_container_image,
         "%{default_arm64_container_image}": default_container_image,
@@ -97,7 +101,7 @@ def _buildbuddy_toolchain_impl(rctx):
     if not rctx.os.name.lower().startswith("windows"):
         rctx.symlink("/usr/bin/ar", "bin/ar")
         rctx.symlink("/usr/bin/ld", "bin/ld")
-        rctx.symlink("/usr/bin/ld.gold", "bin/ld.gold")
+        rctx.symlink("/usr/bin/ld.%s" % rctx.attr.linker, "bin/ld.%s" % rctx.attr.linker)
 
     # Repository implementation functions can be restarted, keep expensive ops at the end.
     if rctx.attr.llvm:
@@ -114,6 +118,11 @@ _buildbuddy_toolchain = repository_rule(
         "container_image": attr.string(),
         "java_version": attr.string(),
         "gcc_version": attr.string(),
+        "linker": attr.string(
+            default = "gold",
+            values = LINKERS,
+            doc = "Linker passed to GCC as -fuse-ld. \"lld\" requires /usr/bin/ld.lld in the container image.",
+        ),
         "msvc_edition": attr.string(values = ["Community", "Professional", "Enterprise"]),
         "msvc_release": attr.string(),
         "msvc_version": attr.string(),
@@ -146,6 +155,7 @@ def buildbuddy(
         llvm = False,
         java_version = "",
         gcc_version = "",
+        linker = "gold",
         msvc_edition = "Community",
         msvc_release = "2022",
         msvc_version = "14.39.33519",
@@ -164,6 +174,7 @@ Please visit https://www.buildbuddy.io/docs/rbe-setup#java-toolchain for the rec
         llvm = llvm,
         java_version = java_version,
         gcc_version = gcc_version,
+        linker = linker,
         msvc_edition = msvc_edition,
         msvc_release = msvc_release,
         msvc_version = msvc_version,

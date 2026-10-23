@@ -1,4 +1,4 @@
-load("//:rules.bzl", "DEFAULT_IMAGE", "UBUNTU16_04_IMAGE", "UBUNTU20_04_IMAGE", "UBUNTU22_04_IMAGE", "UBUNTU24_04_IMAGE", bb_macro = "buildbuddy")
+load("//:rules.bzl", "DEFAULT_IMAGE", "LINKERS", "UBUNTU16_04_IMAGE", "UBUNTU20_04_IMAGE", "UBUNTU22_04_IMAGE", "UBUNTU24_04_IMAGE", bb_macro = "buildbuddy")
 
 def _ext_impl(mctx):
     found_root_module = False
@@ -48,6 +48,7 @@ def _ext_impl(mctx):
         macro_args |= {
             "gcc_version": gcc_toolchain_tag.gcc_major_version,
             "extra_cxx_builtin_include_directories": gcc_toolchain_tag.extra_cxx_builtin_include_directories,
+            "linker": gcc_toolchain_tag.linker,
         }
     if msvc_toolchain_tag:
         macro_args |= {
@@ -70,6 +71,11 @@ buildbuddy = module_extension(
             attrs = {
                 "gcc_major_version": attr.string(),
                 "extra_cxx_builtin_include_directories": attr.string_list(),
+                "linker": attr.string(
+                    default = "gold",
+                    values = LINKERS,
+                    doc = "Linker passed to GCC as -fuse-ld. \"lld\" requires /usr/bin/ld.lld in the container image.",
+                ),
             },
         ),
         "msvc_toolchain": tag_class(

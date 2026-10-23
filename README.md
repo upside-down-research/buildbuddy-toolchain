@@ -52,6 +52,16 @@ bazel build server \
     --platforms=@buildbuddy_toolchain//:platform_linux_x86_64
 ```
 
+## Linker
+
+The Linux GCC toolchain links with `gold` by default. To link with LLD instead:
+
+```python
+buildbuddy.gcc_toolchain(linker = "lld")
+```
+
+Under WORKSPACE, pass `linker = "lld"` to `buildbuddy(...)`. The container image must provide `/usr/bin/ld.lld`.
+
 ## Java support
 
 Bazel provides support for Java toolchains out of the box.
