@@ -25,6 +25,7 @@ buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbudd
 #     buildbuddy.gcc_toolchain(
 #         gcc_major_version = "11",
 #         extra_cxx_builtin_include_directories = ["/some/include/dir"],
+#         linker = "lld",  # default "gold"; "lld" needs /usr/bin/ld.lld in the image
 #     )
 #
 # Customizing MSVC Toolchain(Windows) Definitions:
